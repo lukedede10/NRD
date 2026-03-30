@@ -1,0 +1,400 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+  <title>VMO2 Flow Tool</title>
+  <style>
+    :root{
+      --bg:#07121f;
+      --card:#ffffff;
+      --text:#0b1220;
+      --muted:#64748b;
+      --stroke:#d6dde8;
+      --o2:#005EB8;
+      --o2-dark:#004A93;
+      --red:#E4002B;
+      --red-dark:#B80022;
+      --green:#0f9f6e;
+      --green-dark:#0b6b58;
+      --amber:#c27a00;
+      --radius:24px;
+      --shadow:0 18px 40px rgba(0,0,0,.28);
+      --shadow-soft:0 10px 26px rgba(2,6,23,.10);
+      --max:980px;
+    }
+
+    *{box-sizing:border-box}
+    html,body{margin:0;padding:0;background:linear-gradient(180deg,#08111d 0%, #0d1b2e 100%);color:var(--text);font-family:Arial,Helvetica,sans-serif}
+    body{min-height:100svh}
+
+    .shell{max-width:var(--max);margin:0 auto;padding:18px 14px 32px}
+
+    .brand{
+      display:flex;
+      align-items:center;
+      gap:12px;
+      color:#fff;
+      margin:8px 0 14px;
+    }
+    .logo{
+      width:44px;height:44px;border-radius:14px;
+      background:linear-gradient(135deg,var(--o2) 0 68%,var(--red) 68% 100%);
+      box-shadow:var(--shadow-soft);
+      flex:0 0 auto;
+    }
+    .brand h1{margin:0;font-size:1.2rem;line-height:1.1}
+    .brand p{margin:3px 0 0;color:#d7e3f4;font-size:.92rem}
+
+    .hero{
+      background:linear-gradient(135deg,rgba(0,94,184,.18),rgba(228,0,43,.14));
+      border:1px solid rgba(255,255,255,.12);
+      color:#fff;
+      border-radius:28px;
+      padding:18px;
+      margin-bottom:14px;
+      box-shadow:var(--shadow-soft);
+      backdrop-filter:blur(8px);
+    }
+    .hero-title{margin:0 0 6px;font-size:1.45rem;line-height:1.15}
+    .hero-copy{margin:0;color:#dce7f6;line-height:1.45}
+
+    .layout{display:grid;gap:14px}
+    @media (min-width:960px){
+      .layout{grid-template-columns:1.5fr .9fr;align-items:start}
+    }
+
+    .card{
+      background:var(--card);
+      border:1px solid var(--stroke);
+      border-radius:var(--radius);
+      box-shadow:var(--shadow-soft);
+    }
+
+    .flow-card{padding:18px}
+    .meta{
+      display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px
+    }
+    .pill{
+      display:inline-flex;align-items:center;gap:6px;
+      padding:8px 12px;border-radius:999px;font-size:.85rem;font-weight:700;
+      background:#eff6ff;color:var(--o2);border:1px solid #cfe2ff;
+    }
+    .pill.warn{background:#fff6e6;color:var(--amber);border-color:#f3d59a}
+    .pill.good{background:#ebfbf5;color:var(--green-dark);border-color:#bde8d7}
+
+    .step-title{margin:0 0 10px;font-size:1.5rem;line-height:1.2}
+    .step-body{font-size:1.02rem;line-height:1.55;color:#1e293b;margin:0 0 16px}
+
+    .actions{display:grid;grid-template-columns:1fr;gap:10px;margin-top:10px}
+    .btn{
+      appearance:none;border:none;cursor:pointer;border-radius:20px;padding:16px 18px;
+      font-size:1rem;font-weight:800;line-height:1.2;transition:transform .08s ease, opacity .2s ease, background .2s ease;
+      box-shadow:var(--shadow-soft);
+    }
+    .btn:active{transform:scale(.99)}
+    .btn-yes{background:var(--o2);color:#fff}
+    .btn-yes:hover{background:var(--o2-dark)}
+    .btn-no{background:var(--red);color:#fff}
+    .btn-no:hover{background:var(--red-dark)}
+    .btn-secondary{background:#eef2f7;color:#0f172a}
+    .btn-secondary:hover{background:#e5ebf3}
+    .btn-ghost{background:#fff;color:#334155;border:1px solid var(--stroke);box-shadow:none}
+
+    .footer-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:14px}
+
+    .side{padding:16px}
+    .side h3{margin:0 0 10px;font-size:1rem}
+    .side p{margin:0 0 12px;color:#334155;line-height:1.5}
+    .list{display:grid;gap:10px}
+    .item{
+      border:1px solid var(--stroke);border-radius:18px;padding:12px;background:#fbfdff
+    }
+    .item strong{display:block;margin-bottom:4px}
+    .item small{color:var(--muted);display:block;line-height:1.45}
+
+    .result{
+      margin-top:14px;padding:14px;border-radius:20px;border:1px solid var(--stroke);background:#fafcff
+    }
+    .result h4{margin:0 0 8px;font-size:1rem}
+    .result p{margin:0;line-height:1.55}
+
+    .hidden{display:none!important}
+    .path{
+      margin-top:14px;padding-top:14px;border-top:1px dashed var(--stroke);
+      color:var(--muted);font-size:.92rem;line-height:1.5
+    }
+  </style>
+</head>
+<body>
+  <div class="shell">
+    <div class="brand">
+      <div class="logo" aria-hidden="true"></div>
+      <div>
+        <h1>Virgin Media O2</h1>
+        <p>Swipe-style decision flow template</p>
+      </div>
+    </div>
+
+    <section class="hero">
+      <h2 class="hero-title" id="toolTitle">Operational Decision Flow</h2>
+      <p class="hero-copy" id="toolIntro">Mobile-first yes/no flow tool. Replace the example content below with your approved operational flow.</p>
+    </section>
+
+    <div class="layout">
+      <main class="card flow-card">
+        <div class="meta">
+          <span class="pill" id="stepCounter">Step 1</span>
+          <span class="pill warn" id="flowType">Decision Flow</span>
+          <span class="pill good" id="statusTag">Live</span>
+        </div>
+
+        <h3 class="step-title" id="stepTitle"></h3>
+        <p class="step-body" id="stepBody"></p>
+
+        <div class="actions" id="actions"></div>
+
+        <div class="result hidden" id="resultBox">
+          <h4 id="resultTitle"></h4>
+          <p id="resultBody"></p>
+        </div>
+
+        <div class="footer-actions">
+          <button class="btn btn-secondary" id="backBtn" type="button">Back</button>
+          <button class="btn btn-ghost" id="restartBtn" type="button">Restart</button>
+        </div>
+
+        <div class="path" id="pathTrail">Path: Start</div>
+      </main>
+
+      <aside class="card side">
+        <h3>What good looks like</h3>
+        <div class="list" id="goodList">
+          <div class="item">
+            <strong>Simple journey</strong>
+            <small>One question at a time, large buttons, no clutter, easy to use on a phone.</small>
+          </div>
+          <div class="item">
+            <strong>Approved wording</strong>
+            <small>Keep content tightly aligned to the agreed process and avoid adding interpretation.</small>
+          </div>
+          <div class="item">
+            <strong>Clear end state</strong>
+            <small>Every route should end in a specific instruction, escalation, or next action.</small>
+          </div>
+        </div>
+
+        <h3 style="margin-top:16px">What to avoid</h3>
+        <div class="list" id="avoidList">
+          <div class="item">
+            <strong>Too much text</strong>
+            <small>Do not bury the decision in long paragraphs.</small>
+          </div>
+          <div class="item">
+            <strong>Mixed messages</strong>
+            <small>Do not show conflicting instructions or optional wording when the process is mandatory.</small>
+          </div>
+          <div class="item">
+            <strong>Dead ends</strong>
+            <small>Do not leave the user without a clear next step.</small>
+          </div>
+        </div>
+      </aside>
+    </div>
+  </div>
+
+  <script>
+    const flowConfig = {
+      title: "NRD Check Flow",
+      intro: "Use this flow to decide the correct next action when working through an NRD check outcome.",
+      typeLabel: "NRD Decision Flow",
+      statusLabel: "Draft",
+      start: "start",
+      nodes: {
+        start: {
+          title: "Is the NRD check OK?",
+          body: "Confirm whether the NRD check is acceptable before deciding the next route.",
+          buttons: [
+            { label: "Yes", className: "btn-yes", next: "complete_nrd" },
+            { label: "No", className: "btn-no", next: "no_branch" }
+          ]
+        },
+        complete_nrd: {
+          resultTitle: "Complete NRD form with details",
+          resultBody: "The NRD check is OK. Complete the NRD form and ensure all relevant details are included clearly."
+        },
+        no_branch: {
+          title: "What is the reason the NRD check is not OK?",
+          body: "Select the issue identified to follow the correct process.",
+          buttons: [
+            { label: "Tree issue", className: "btn-no", next: "tree_issue" },
+            { label: "JUP / D / Hollow Pole", className: "btn-no", next: "pole_issue" },
+            { label: "Line of sight", className: "btn-no", next: "los_issue" },
+            { label: "Wayleave", className: "btn-no", next: "wayleave_issue" },
+            { label: "Traffic management", className: "btn-no", next: "traffic_issue" },
+            { label: "Oversubscribed", className: "btn-no", next: "oversubscribed_issue" },
+            { label: "PON ID / DP change needed", className: "btn-yes", next: "email_xgs" }
+          ]
+        },
+            { label: "PON ID / DP change needed", className: "btn-yes", next: "email_xgs" }
+          ]
+        },
+        tree_issue: {
+          title: "Tree issue",
+          body: "Follow the tree issue process.",
+          buttons: [
+            { label: "Continue", className: "btn-yes", next: "submit_forms" }
+          ]
+        },
+        pole_issue: {
+          title: "JUP / D / Hollow Pole",
+          body: "Follow the pole issue process.",
+          buttons: [
+            { label: "Continue", className: "btn-yes", next: "submit_forms" }
+          ]
+        },
+        los_issue: {
+          title: "Line of sight",
+          body: "Follow the line of sight process.",
+          buttons: [
+            { label: "Continue", className: "btn-yes", next: "submit_forms" }
+          ]
+        },
+        wayleave_issue: {
+          title: "Wayleave",
+          body: "Follow the wayleave process.",
+          buttons: [
+            { label: "Continue", className: "btn-yes", next: "submit_forms" }
+          ]
+        },
+        traffic_issue: {
+          title: "Traffic management",
+          body: "Follow the traffic management process.",
+          buttons: [
+            { label: "Continue", className: "btn-yes", next: "submit_forms" }
+          ]
+        },
+        oversubscribed_issue: {
+          title: "Oversubscribed",
+          body: "Follow the oversubscription process.",
+          buttons: [
+            { label: "Continue", className: "btn-yes", next: "submit_forms" }
+          ]
+        },
+        submit_forms: {
+          resultTitle: "Submit forms or request licences",
+          resultBody: "Submit the required forms or request the necessary licences for this issue, then proceed to inform Liam and Marcus.",
+          next: "inform_liam_marcus"
+        },
+        email_xgs: {
+          title: "Email XGS?",
+          body: "If a PON ID or DP change is needed, email XGS and then continue to inform Liam and Marcus.",
+          buttons: [
+            { label: "Continue", className: "btn-yes", next: "inform_liam_marcus" }
+          ]
+        },
+        inform_liam_marcus: {
+          resultTitle: "Inform Liam and Marcus",
+          resultBody: "After completing the relevant change or request path, make sure Liam and Marcus are informed."
+        }
+      }
+    };
+
+    const state = {
+      current: flowConfig.start,
+      history: [],
+      labels: []
+    };
+
+    const toolTitle = document.getElementById('toolTitle');
+    const toolIntro = document.getElementById('toolIntro');
+    const flowType = document.getElementById('flowType');
+    const statusTag = document.getElementById('statusTag');
+    const stepCounter = document.getElementById('stepCounter');
+    const stepTitle = document.getElementById('stepTitle');
+    const stepBody = document.getElementById('stepBody');
+    const actions = document.getElementById('actions');
+    const resultBox = document.getElementById('resultBox');
+    const resultTitle = document.getElementById('resultTitle');
+    const resultBody = document.getElementById('resultBody');
+    const backBtn = document.getElementById('backBtn');
+    const restartBtn = document.getElementById('restartBtn');
+    const pathTrail = document.getElementById('pathTrail');
+
+    toolTitle.textContent = flowConfig.title;
+    toolIntro.textContent = flowConfig.intro;
+    flowType.textContent = flowConfig.typeLabel;
+    statusTag.textContent = flowConfig.statusLabel;
+
+    function isResultNode(node){
+      return !!node.resultTitle;
+    }
+
+    function render(){
+      const node = flowConfig.nodes[state.current];
+      const stepNum = state.history.length + 1;
+      stepCounter.textContent = `Step ${stepNum}`;
+      actions.innerHTML = '';
+
+      if (isResultNode(node)) {
+        stepTitle.textContent = 'Outcome';
+        stepBody.textContent = 'Follow the instruction below.';
+        resultTitle.textContent = node.resultTitle;
+        resultBody.textContent = node.resultBody;
+        resultBox.classList.remove('hidden');
+      } else {
+        stepTitle.textContent = node.title;
+        stepBody.textContent = node.body;
+        resultBox.classList.add('hidden');
+
+        node.buttons.forEach((button) => {
+          const el = document.createElement('button');
+          el.type = 'button';
+          el.className = `btn ${button.className}`;
+          el.textContent = button.label;
+          el.addEventListener('click', () => {
+            state.history.push(state.current);
+            state.labels.push(button.label);
+            state.current = button.next;
+            render();
+
+    // Auto-advance for result nodes with next
+    const originalRender = render;
+    render = function() {
+      originalRender();
+      const node = flowConfig.nodes[state.current];
+      if (node && node.next) {
+        setTimeout(() => {
+          state.history.push(state.current);
+          state.current = node.next;
+          render();
+        }, 1200);
+      }
+    };
+          });
+          actions.appendChild(el);
+        });
+      }
+
+      backBtn.disabled = state.history.length === 0;
+      pathTrail.textContent = `Path: Start${state.labels.length ? ' → ' + state.labels.join(' → ') : ''}`;
+    }
+
+    backBtn.addEventListener('click', () => {
+      if (!state.history.length) return;
+      state.current = state.history.pop();
+      state.labels.pop();
+      render();
+    });
+
+    restartBtn.addEventListener('click', () => {
+      state.current = flowConfig.start;
+      state.history = [];
+      state.labels = [];
+      render();
+    });
+
+    render();
+  </script>
+</body>
+</html>
