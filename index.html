@@ -59,7 +59,7 @@
     .hero-title{margin:0 0 6px;font-size:1.45rem;line-height:1.15}
     .hero-copy{margin:0;color:#dce7f6;line-height:1.45}
 
-    .layout{display:grid;gap:14px}
+    .layout{display:block}
     @media (min-width:960px){
       .layout{grid-template-columns:1.5fr .9fr;align-items:start}
     }
@@ -167,39 +167,7 @@
         <div class="path" id="pathTrail">Path: Start</div>
       </main>
 
-      <aside class="card side">
-        <h3>What good looks like</h3>
-        <div class="list" id="goodList">
-          <div class="item">
-            <strong>Simple journey</strong>
-            <small>One question at a time, large buttons, no clutter, easy to use on a phone.</small>
-          </div>
-          <div class="item">
-            <strong>Approved wording</strong>
-            <small>Keep content tightly aligned to the agreed process and avoid adding interpretation.</small>
-          </div>
-          <div class="item">
-            <strong>Clear end state</strong>
-            <small>Every route should end in a specific instruction, escalation, or next action.</small>
-          </div>
-        </div>
-
-        <h3 style="margin-top:16px">What to avoid</h3>
-        <div class="list" id="avoidList">
-          <div class="item">
-            <strong>Too much text</strong>
-            <small>Do not bury the decision in long paragraphs.</small>
-          </div>
-          <div class="item">
-            <strong>Mixed messages</strong>
-            <small>Do not show conflicting instructions or optional wording when the process is mandatory.</small>
-          </div>
-          <div class="item">
-            <strong>Dead ends</strong>
-            <small>Do not leave the user without a clear next step.</small>
-          </div>
-        </div>
-      </aside>
+      
     </div>
   </div>
 
@@ -358,16 +326,7 @@
             state.current = button.next;
             render();
 
-    // Auto-advance for result nodes with next
-    const originalRender = render;
-    render = function() {
-      originalRender();
-      const node = flowConfig.nodes[state.current];
-      if (node && node.next) {
-        setTimeout(() => {
-          state.history.push(state.current);
-          state.current = node.next;
-          render();
+    render();
         }, 1200);
       }
     };
